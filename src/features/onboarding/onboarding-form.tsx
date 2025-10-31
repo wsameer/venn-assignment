@@ -1,26 +1,14 @@
-'use client';
-
-import { ArrowRight } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
-
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  onboardingSchema,
-  type OnboardingFormData,
-} from '@/lib/schemas/onboarding-schema';
 import { TypoError } from '@/components/errors/typo-error';
-import {
-  formatPhoneNumber,
-  formatPhoneNumberDisplay,
-} from '@/lib/phone-formatter';
+import { useOnboardingForm } from './hooks/use-onboarding-form';
+import { usePhoneFormatter } from './hooks/use-phone-formatter';
+import { useCorporationValidation } from './hooks/use-corporation-validation';
 
 export function OnboardingForm() {
   const { form, isSubmitting, onSubmit } = useOnboardingForm();
-
   const {
     register,
     handleSubmit,
@@ -29,18 +17,30 @@ export function OnboardingForm() {
     formState: { errors },
   } = form;
 
-  const phoneNumber = watch('phoneNumber');
+  const phone = watch('phone');
+  const { handlePhoneChange, handlePhoneBlur, formatPhoneNumberDisplay } =
+    usePhoneFormatter(setValue);
 
-  const { handlePhoneBlur, handlePhoneChange, formatPhoneNumberDisplay } =
-    usePhoneNumberFormatter(setValue);
+  const {
+    validateCorporationNumber,
+    isValidating,
+    validationError,
+    clearValidationError,
+  } = useCorporationValidation();
 
-  
-  const onSubmit = (data: OnboardingFormData) => {
-    console.log('Form submitted:', data);
-    toast.success('Form submitted successfully!', {
-      description: 'Your onboarding information has been received.',
-    });
+  const handleCorporationBlur = async (
+    e: React.FocusEvent<HTMLInputElement>,
+  ) => {
+    const value = e.target.value.trim();
+    if (value && value.length === 9) {
+      await validateCorporationNumber(value);
+    }
   };
+
+  const corporationError =
+    errors.corporationNumber?.message || validationError || undefined;
+
+  const corporationRegister = register('corporationNumber');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 text-left">
@@ -54,6 +54,7 @@ export function OnboardingForm() {
             id="firstName"
             className="w-full"
             aria-invalid={!!errors.firstName}
+            disabled={isSubmitting}
           />
           <TypoError message={errors.firstName?.message} />
         </div>
@@ -67,44 +68,75 @@ export function OnboardingForm() {
             id="lastName"
             className="w-full"
             aria-invalid={!!errors.lastName}
+            disabled={isSubmitting}
           />
           <TypoError message={errors.lastName?.message} />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="phoneNumber" className="text-sm font-medium">
+        <Label htmlFor="phone" className="text-sm font-medium">
           Phone Number
         </Label>
         <Input
-          id="phoneNumber"
+          id="phone"
           type="tel"
           onChange={handlePhoneChange}
-          onBlur={handlePhoneBlur}
-          value={phoneNumber ? formatPhoneNumberDisplay(phoneNumber) : ''}
+          onBlur={() => handlePhoneBlur(phone)}
+          value={phone ? formatPhoneNumberDisplay(phone) : ''}
           placeholder="+1 (___) ___-____"
           className="w-full"
-          aria-invalid={!!errors.phoneNumber}
+          aria-invalid={!!errors.phone}
+          disabled={isSubmitting}
         />
-        <TypoError message={errors.phoneNumber?.message} />
+        <TypoError message={errors.phone?.message} />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="corporationNumber" className="text-sm font-medium">
           Corporation Number
         </Label>
-        <Input
-          {...register('corporationNumber')}
-          id="corporationNumber"
-          maxLength={9}
-          className="w-full"
-          aria-invalid={!!errors.corporationNumber}
-        />
-        <TypoError message={errors.corporationNumber?.message} />
+        <div className="relative">
+          <Input
+            {...corporationRegister}
+            id="corporationNumber"
+            maxLength={9}
+            className="w-full"
+            aria-invalid={!!corporationError}
+            onBlur={(e) => {
+              corporationRegister.onBlur(e);
+              handleCorporationBlur(e);
+            }}
+            onChange={(e) => {
+              clearValidationError();
+              corporationRegister.onChange(e);
+            }}
+            disabled={isSubmitting}
+          />
+          {isValidating && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+          )}
+        </div>
+        <TypoError message={corporationError} />
       </div>
-      <Button type="submit" className="w-full h-12" size="sm">
-        Submit
-        <ArrowRight />
+
+      <Button
+        type="submit"
+        className="w-full h-12"
+        size="sm"
+        disabled={isSubmitting || isValidating}
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Submitting...
+          </>
+        ) : (
+          <>
+            Submit
+            <ArrowRight />
+          </>
+        )}
       </Button>
     </form>
   );
