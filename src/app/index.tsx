@@ -7,7 +7,7 @@ export const App = () => {
   return (
     <AppProvider>
       <PageLayout>
-        <div className="bg-gray-100 p-6 md:p-8">
+        <div className="bg-gray-100 p-6 md:p-8 text-center">
           <StepIndicator currentStep={1} totalSteps={5} />
           <Onboarding />
         </div>
