@@ -16,7 +16,13 @@ export const PageLayout = ({
   return (
     <div className="w-full md:max-w-4xl md:mx-auto">
       <main className="md:py-12">{children}</main>
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          classNames: {
+            description: '!text-black',
+          },
+        }}
+      />
     </div>
   );
 };
