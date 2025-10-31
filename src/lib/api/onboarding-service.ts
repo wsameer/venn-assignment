@@ -1,13 +1,18 @@
-import { apiClient } from '@/lib/api/axios-instance';
+import { AxiosError } from 'axios';
+import { apiClient } from './axios-instance';
 import type {
-  ApiError,
   CorporationNumberValidationResponse,
   ProfileDetailsRequest,
   ProfileDetailsResponse,
-} from '@/lib/api/types';
-import type { AxiosError } from 'axios';
+  ApiError,
+} from './types';
 
 export class OnboardingService {
+  /**
+   * Validates a corporation number with the API
+   * @param corporationNumber - The 9-digit corporation number to validate
+   * @returns Promise with validation result
+   */
   static async validateCorporationNumber(
     corporationNumber: string,
   ): Promise<CorporationNumberValidationResponse> {
@@ -25,40 +30,57 @@ export class OnboardingService {
     }
   }
 
+  /**
+   * Submits profile details to the API
+   * @param data - Profile details to submit
+   * @returns Promise with submission result
+   */
   static async submitProfileDetails(
     data: ProfileDetailsRequest,
-  ): Promise<ProfileDetailsResponse> {
+  ): Promise<ProfileDetailsResponse | string> {
     try {
-      const response = await apiClient.post<ProfileDetailsResponse>(
+      const response = await apiClient.post<ProfileDetailsResponse | string>(
         '/profile-details',
         data,
       );
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
-      throw this.handleError(axiosError, 'Failed to submit profile details');
+      throw this.handleError(
+        axiosError,
+        'Failed to validate corporation number',
+      );
     }
   }
 
-  static handleError(axiosError: AxiosError, defaultMessage: string): ApiError {
-    if (axiosError.response) {
+  /**
+   * Centralized error handling for API calls
+   * @param error - Axios error object
+   * @param defaultMessage - Default error message
+   * @returns Structured API error
+   */
+  private static handleError(
+    error: AxiosError,
+    defaultMessage: string,
+  ): ApiError {
+    if (error.response) {
       return {
         message:
-          (axiosError.response.data as { message?: string })?.message ||
+          (error.response.data as { message?: string })?.message ||
           defaultMessage,
-        statusCode: axiosError.response.status,
-        details: axiosError.response.data,
+        statusCode: error.response.status,
+        details: error.response.data,
       };
-    } else if (axiosError.request) {
+    } else if (error.request) {
       return {
-        message: 'Network error. Please try again.',
-        details: axiosError.message,
+        message: 'Network error. Please try after your internet is back.',
+        details: error.message,
       };
     }
 
     return {
       message: defaultMessage,
-      details: axiosError.message,
+      details: error.message,
     };
   }
 }

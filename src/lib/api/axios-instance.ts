@@ -23,11 +23,11 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response) {
-      console.log('API Error', error.response.status, error.response.data);
+      console.error('API Error:', error.response.status, error.response.data);
     } else if (error.request) {
-      console.log('Network Error', error.message);
+      console.error('Network Error:', error.message);
     } else {
-      console.log('Error', error.message);
+      console.error('Error:', error.message);
     }
     return Promise.reject(error);
   },
