@@ -4,7 +4,7 @@ import { OnboardingForm } from './onboarding-form';
 
 export const Onboarding = () => {
   return (
-    <Card className="w-full max-w-sm md:m-[100px]">
+    <Card className="w-full max-w-full mx-auto md:max-w-xl md:m-[100px]">
       <CardHeader>Onboarding Form</CardHeader>
       <CardContent>
         <OnboardingForm />

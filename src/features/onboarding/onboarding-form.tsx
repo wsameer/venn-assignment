@@ -19,28 +19,22 @@ import {
 } from '@/lib/phone-formatter';
 
 export function OnboardingForm() {
+  const { form, isSubmitting, onSubmit } = useOnboardingForm();
+
   const {
     register,
     handleSubmit,
     watch,
     setValue,
     formState: { errors },
-  } = useForm<OnboardingFormData>({
-    resolver: zodResolver(onboardingSchema),
-  });
-  console.log('🚀 ~ OnboardingForm ~ errors:', errors);
+  } = form;
 
   const phoneNumber = watch('phoneNumber');
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhoneNumber(e.target.value);
-    setValue('phoneNumber', formatted, { shouldValidate: false });
-  };
+  const { handlePhoneBlur, handlePhoneChange, formatPhoneNumberDisplay } =
+    usePhoneNumberFormatter(setValue);
 
-  const handlePhoneBlur = () => {
-    setValue('phoneNumber', phoneNumber || '', { shouldValidate: true });
-  };
-
+  
   const onSubmit = (data: OnboardingFormData) => {
     console.log('Form submitted:', data);
     toast.success('Form submitted successfully!', {
