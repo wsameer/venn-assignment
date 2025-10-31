@@ -9,7 +9,9 @@ import {
 import { OnboardingService } from '@/lib/api/onboarding-service';
 import type { ApiError, ProfileDetailsResponse } from '@/lib/api/types';
 
-export const useOnboardingForm = () => {
+export const useOnboardingForm = (
+  validateCorporationNumber?: (value: string) => Promise<boolean>,
+) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<OnboardingFormData>({
@@ -25,6 +27,14 @@ export const useOnboardingForm = () => {
     setIsSubmitting(true);
 
     try {
+      if (validateCorporationNumber && data.corporationNumber?.length === 9) {
+        const isValid = await validateCorporationNumber(data.corporationNumber);
+        if (!isValid) {
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const result = await OnboardingService.submitProfileDetails(data);
 
       if (result === 'OK') {

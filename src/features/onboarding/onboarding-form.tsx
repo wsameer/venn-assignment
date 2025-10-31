@@ -8,7 +8,16 @@ import { usePhoneFormatter } from './hooks/use-phone-formatter';
 import { useCorporationValidation } from './hooks/use-corporation-validation';
 
 export function OnboardingForm() {
-  const { form, isSubmitting, onSubmit } = useOnboardingForm();
+  const {
+    validateCorporationNumber,
+    isValidating,
+    validationError,
+    clearValidationError,
+  } = useCorporationValidation();
+  const { form, isSubmitting, onSubmit } = useOnboardingForm(
+    validateCorporationNumber,
+  );
+
   const {
     register,
     handleSubmit,
@@ -20,13 +29,6 @@ export function OnboardingForm() {
   const phone = watch('phone');
   const { handlePhoneChange, handlePhoneBlur, formatPhoneNumberDisplay } =
     usePhoneFormatter(setValue);
-
-  const {
-    validateCorporationNumber,
-    isValidating,
-    validationError,
-    clearValidationError,
-  } = useCorporationValidation();
 
   const handleCorporationBlur = async (
     e: React.FocusEvent<HTMLInputElement>,
