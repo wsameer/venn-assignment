@@ -10,10 +10,7 @@ export const onboardingSchema = z.object({
     .trim()
     .min(1, 'First name is required')
     .max(50, 'First name must be 50 characters or less')
-    .regex(
-      NAME_REGEX,
-      'First name can only contain letters, spaces, hyphens, and apostrophes',
-    )
+    .regex(NAME_REGEX, "You are not Elon's kid. Use letters only!")
     .refine((val) => val.length >= 2, {
       message: 'First name must be at least 2 characters',
     }),
@@ -34,7 +31,7 @@ export const onboardingSchema = z.object({
   phone: z
     .string()
     .min(1, 'Phone number is required')
-    .regex(CANADIAN_PHONE_REGEX, 'Please enter a valid Canadian phone number'),
+    .regex(CANADIAN_PHONE_REGEX, 'Please enter a valid 🇨🇦 phone number'),
 
   corporationNumber: z
     .string()

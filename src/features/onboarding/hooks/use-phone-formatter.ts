@@ -5,10 +5,6 @@ import {
   formatPhoneNumberDisplay,
 } from '@/lib/phone-formatter';
 
-/**
- * Custom hook for phone number formatting logic
- * Single Responsibility: Handles phone number formatting
- */
 export const usePhoneFormatter = <T extends FieldValues>(
   setValue: UseFormSetValue<T>,
 ) => {
