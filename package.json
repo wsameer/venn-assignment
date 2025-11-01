@@ -1,8 +1,12 @@
 {
-  "name": "fe-kickstart",
+  "name": "venn-assignment",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
+  "author": {
+    "name": "Sam Waskar",
+    "email": "dev.wsameer@gmail.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

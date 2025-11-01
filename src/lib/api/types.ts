@@ -1,19 +1,13 @@
-/**
- * API types - Interface Segregation Principle
- * Each type represents a specific API contract
- */
+export type CorporationNumberValidationResponse =
+  | {
+      valid: true;
+      corporationNumber: string;
+    }
+  | {
+      valid: false;
+      message: string;
+    };
 
-/**
- * Response from corporation number validation endpoint
- */
-export interface CorporationNumberValidationResponse {
-  valid: boolean;
-  corporationNumber: string;
-}
-
-/**
- * Request payload for profile details submission
- */
 export interface ProfileDetailsRequest {
   firstName: string;
   lastName: string;
@@ -21,16 +15,10 @@ export interface ProfileDetailsRequest {
   corporationNumber: string;
 }
 
-/**
- * Response from profile details submission
- */
 export interface ProfileDetailsResponse {
   message?: string;
 }
 
-/**
- * Generic API error type
- */
 export interface ApiError {
   message: string;
   statusCode?: number;

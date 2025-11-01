@@ -4,10 +4,6 @@ const CANADIAN_PHONE_REGEX = /^\+1\d{10}$/;
 
 const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
 
-/**
- * Client-side validation schema
- * Note: Corporation number has additional async validation via API
- */
 export const onboardingSchema = z.object({
   firstName: z
     .string()

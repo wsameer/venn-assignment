@@ -10,7 +10,6 @@ import type { ApiError } from '@/lib/api/types';
 // "123456789",
 // "591863427",
 // "312574689",
-// "4",
 // "265398741",
 // "762354918",
 // "468721395",
@@ -53,7 +52,7 @@ export const useCorporationValidation = () => {
           await OnboardingService.validateCorporationNumber(corporationNumber);
 
         if (!result.valid) {
-          setValidationError('Invalid corporation number');
+          setValidationError(result.message);
           setLastValidatedValue(corporationNumber);
           setIsValidated(true);
           return false;
