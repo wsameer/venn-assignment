@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
-const API_BASE_URL = 'https://fe-hometask-api.qa.vault.tryvault.com';
+const API_BASE_URL =
+  process.env.API_BASE_URL ?? 'https://fe-hometask-api.qa.vault.tryvault.com';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
